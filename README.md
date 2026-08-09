@@ -6,7 +6,7 @@ A turtle catching system developed with ROS2 Jazzy and Modern C++.
 The system contains a spawner node and a controller node communicating through custom messages and services.
 
 <p align="center">
-  <img src="docs/demo.gif" width="700">
+  <img src="docs/Demo.gif" width="700">
 </p>
 
 ## Features
