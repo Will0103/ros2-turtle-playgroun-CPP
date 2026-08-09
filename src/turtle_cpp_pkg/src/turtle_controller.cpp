@@ -20,10 +20,17 @@ public:
         subscriber_alive_turtle_ = this->create_subscription<my_robot_interfaces::msg::Turtle2Array>(
             "alive_turtle", 10, std::bind(&TurtleControllerNode::turtleList, this, _1));
         publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("turtle1/cmd_vel", 10);
-        timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&TurtleControllerNode::chaseTurtle, this));
+        delay_timer_ = this->create_wall_timer(std::chrono::seconds(2), std::bind(&TurtleControllerNode::callbackDelayTimer, this));
+        
         catch_turtle_ = this->create_client<my_robot_interfaces::srv::CatchTurtle>("catch_turtle", 10);
     }
 private:
+    void callbackDelayTimer()
+    {
+        delay_timer_->cancel();
+        timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&TurtleControllerNode::chaseTurtle, this));
+    }
+
     void callbackPose(const turtlesim::msg::Pose::SharedPtr msg)
     {
         turtle1_x = msg->x;
@@ -120,6 +127,7 @@ private:
     rclcpp::Subscription<my_robot_interfaces::msg::Turtle2Array>::SharedPtr subscriber_alive_turtle_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr delay_timer_;
     std::vector<my_robot_interfaces::msg::Turtle2> alive_turtles_;
     rclcpp::Client<my_robot_interfaces::srv::CatchTurtle>::SharedPtr catch_turtle_;
     bool target_exist= false;
